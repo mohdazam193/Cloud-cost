@@ -247,7 +247,14 @@ const mongoClient = new MongoClient(MONGO_URI, {
     }
 });
 
+let isConnected = false;
+
 async function connectDB() {
+    if (isConnected) {
+        console.log("✅ Using existing MongoDB connection");
+        return;
+    }
+
     try {
         console.log("Attempting to connect to MongoDB...");
         await mongoClient.connect();
@@ -270,11 +277,16 @@ async function connectDB() {
         // Check user count
         const userCount = await usersCollection.countDocuments();
         console.log(`✅ Current registered users: ${userCount}`);
+        
+        isConnected = true;
 
     } catch (e) {
         console.error("❌ Could not connect to MongoDB:", e.message);
         console.error("⚠️  Please check your MONGO_URI in .env file");
-        process.exit(1); // Exit if DB connection fails
+        if (process.env.NODE_ENV !== 'production') {
+            process.exit(1); // Only exit in development
+        }
+        throw e; // Throw error in production for proper handling
     }
 }
 
@@ -1375,6 +1387,25 @@ Annual savings: $${totalSavings * 12}
 
 *Configure GEMINI_API_KEY for enhanced AI recommendations*`;
 }
+
+// --- Middleware: Ensure DB Connection ---
+async function ensureDBConnection(req, res, next) {
+    try {
+        if (!isConnected) {
+            await connectDB();
+        }
+        next();
+    } catch (error) {
+        console.error('Database connection error:', error);
+        res.status(503).json({ 
+            success: false, 
+            message: 'Database connection unavailable. Please try again.' 
+        });
+    }
+}
+
+// Apply DB connection middleware to all API routes
+app.use('/api', ensureDBConnection);
 
 // --- Middleware: JWT Authentication ---
 function authenticateToken(req, res, next) {

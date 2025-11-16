@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "Cloud Cost Optimization tool with AI-driven advice and real-time AWS monitoring.",
   "main": "backend/server.js",
+  "engines": {
+    "node": ">=18.x"
+  },
   "scripts": {
     "start": "node backend/server.js",
     "dev": "nodemon backend/server.js",
@@ -31,4 +34,3 @@
     "nodemon": "^3.0.2"
   }
 }
-
