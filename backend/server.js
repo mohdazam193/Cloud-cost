@@ -223,7 +223,12 @@ const MOCK_AWS_ACCESS_KEY = process.env.MOCK_AWS_ACCESS_KEY;
 const MOCK_AWS_SECRET_KEY = process.env.MOCK_AWS_SECRET_KEY;
 
 // --- Middlewares ---
-app.use(cors());
+app.use(cors({
+    origin: process.env.NODE_ENV === 'production' 
+        ? process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : '*'
+        : '*',
+    credentials: true
+}));
 app.use(express.json());
 app.use(express.static(path.join(__dirname, '../frontend'))); // Serve static files
 
@@ -2051,11 +2056,20 @@ app.get('/api/active-alerts', authenticateToken, async (req, res) => {
 });
 
 // --- Server Start ---
-connectDB().then(() => {
+// Connect to MongoDB on startup
+connectDB().catch(err => {
+    console.error('Failed to connect to MongoDB on startup:', err);
+});
+
+// For local development
+if (process.env.NODE_ENV !== 'production') {
     app.listen(port, () => {
         console.log(`\n🚀 Server running at http://localhost:${port}`);
         console.log(`📊 MongoDB: Connected`);
         console.log(`🤖 Gemini AI: ${genAI ? (workingModel ? `Ready (${workingModel})` : 'Auto-detect mode') : 'Not configured'}`);
         console.log(`🔗 Access the app: http://localhost:${port}\n`);
     });
-});
+}
+
+// Export for Vercel serverless
+module.exports = app;

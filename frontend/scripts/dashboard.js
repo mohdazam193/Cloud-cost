@@ -593,7 +593,7 @@ async function loadSavedCredentials() {
     document.getElementById('awsSecretKey').value = '';
 
     try {
-        const response = await fetch('http://localhost:3000/api/aws-credentials', {
+        const response = await fetch('/api/aws-credentials', {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`
@@ -819,7 +819,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         try {
             const token = getAuthToken();
-            const response = await fetch('http://localhost:3000/api/dashboard', {
+            const response = await fetch('/api/dashboard', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
