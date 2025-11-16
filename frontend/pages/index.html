@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CostInsight Auth-Page</title>
+    <link rel="stylesheet" href="../css/style.css">
+
+    <!-- This is for icons/symbols -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="../scripts/auth.js" defer></script>
+</head>
+<body>
+    <div class="header" style="padding: 8px 20px;">    
+        <h1><i class="fa-solid fa-cloud"></i> CostInsight</h1>
+        <p style="font-size: 0.9rem;padding: 0px 10px; font-weight: 300;">Insight of your Real-Time AWS Analytics & AI-Powered Advisor</p>
+    </div>
+
+    <div class="container">
+        <div class="card" style="max-width: 450px; margin: 50px auto; box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);">
+            <h2 style="text-align: center; color: var(--color-primary); margin-bottom: 10px;">Welcome Back</h2>
+            <p style="text-align: center; margin-bottom: 30px; color: #666; font-size: 0.95rem;">
+                Sign in to analyze your AWS infrastructure
+            </p>
+            
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="username">Username:</label>
+                    <input type="text" id="username" placeholder="Enter your username" required autocomplete="username">
+                </div>
+                <div class="form-group">
+                    <label for="password">Password:</label>
+                    <input type="password" id="password" placeholder="Enter your password" required autocomplete="current-password">
+                </div>
+                <button type="submit" style="width: 100%; padding: 14px; font-size: 1.05rem;">
+                    <i class="fa-solid fa-right-to-bracket"></i> Log In
+                </button>
+            </form>
+
+            <div style="margin-top: 20px; text-align: center; color: #666; font-size: 0.95rem;">
+                Don't have an account? 
+                <a href="signup.html" style="color: var(--color-primary); text-decoration: none; font-weight: 600;">
+                    Create Account
+                </a>
+            </div>
+
+            <div style="margin-top: 25px; padding-top: 20px; border-top: 1px solid #ddd; text-align: center; color: #666; font-size: 0.9rem;">
+                <p><i class="fa-solid fa-lightbulb"></i> <strong>Features:</strong> Real-time AWS monitoring • Cloud cost advisor • AI cost Optimisor</p>
+            </div>
+        </div>
+    </div>
+    
+    <div id="messageModal" class="modal">
+        <div class="modal-content">
+            <h3 id="modalTitle"></h3>
+            <p id="modalMessage"></p>
+            <div class="modal-button-group">
+                <button id="modalOkButton">OK</button>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

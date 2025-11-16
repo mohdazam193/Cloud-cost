@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CostInsight-Dash</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.6/dist/purify.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="../scripts/auth.js"></script>
+    <script src="../scripts/dashboard.js" defer></script>
+</head>
+<body>
+
+    <div class="header" style="position: sticky; top: 0; z-index: 1000;">
+        <div style="max-width: 1400px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; padding: 0 20px;">
+            <div>
+                <h1 style="margin: 0;"><i class="fa-solid fa-cloud"></i> CostInsight</h1>
+                <p style="margin: 5px 0 0 0; font-size: 0.85rem; font-weight: 300; opacity: 0.9;">Insight of your Real-Time AWS Analytics & AI-Powered Advisor</p>
+            </div>
+            <div style="display: flex; align-items: center; gap: 20px;">
+                <div id="userInfo" style="text-align: right;">
+                    <div style="font-weight: 600; font-size: 0.95rem;" id="userName">Loading...</div>
+                </div>
+                <button id="logoutButton" style="color: white; padding: 10px 20px; background: rgba(240, 43, 43, 0.893); border: 1px solid rgb(248, 9, 9); border-radius: 8px; cursor: pointer; transition: all 0.3s;">
+                    <i class="fa-solid fa-right-from-bracket"></i> Logout
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation Bar -->
+    <div class="navbar" style="background: white; box-shadow: 0 2px 8px rgba(0,0,0,0.08); position: sticky; top: 90px; z-index: 999;">
+        <div class="container" style="max-width: 1400px; margin: 0 auto; padding: 0 20px;">
+            <ul class="nav-menu" style="display: flex; list-style: none; gap: 30px; margin: 0; padding: 15px 0;">
+                <li class="nav-item active">
+                    <a href="#dashboard" id="dashboardNavLink" class="nav-link" style="display: flex; align-items: center; gap: 8px; color: var(--color-primary); font-weight: 600; text-decoration: none; padding: 8px 12px; border-radius: 8px; transition: all 0.3s;">
+                        <i class="fa-solid fa-chart-line"></i> <span>Dashboard</span>
+                    </a>
+                </li>
+    
+                <li class="nav-item">
+                    <a href="#ai-assistant" id="aiAssistantNavLink" class="nav-link" style="display: flex; align-items: center; gap: 8px; color: var(--color-text-secondary); font-weight: 600; text-decoration: none; padding: 8px 12px; border-radius: 8px; transition: all 0.3s;">
+                        <i class="fa-solid fa-robot"></i> <span>AI Assistant</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#historical-trends" id="historicalTrendsNavLink" class="nav-link" style="display: flex; align-items: center; gap: 8px; color: var(--color-text-secondary); font-weight: 600; text-decoration: none; padding: 8px 12px; border-radius: 8px; transition: all 0.3s;">
+                        <i class="fa-solid fa-clock-rotate-left"></i> <span>Historical Trends</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#credentials" id="credentialsNavLink" class="nav-link" style="display: flex; align-items: center; gap: 8px; color: var(--color-text-secondary); font-weight: 600; text-decoration: none; padding: 8px 12px; border-radius: 8px; transition: all 0.3s;">
+                        <i class="fa-solid fa-key"></i> <span>AWS Credentials</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="container" style="max-width: 1400px; margin: 20px auto; padding: 0 20px;">
+        
+        <!-- AWS Credentials Section -->
+        <div class="section-card credentials-section" id="credentialsSection" style="display: none;">
+            <div class="section-header">
+                <div>
+                    <h2><i class="fa-solid fa-key"></i> AWS Credentials Management</h2>
+                    <p>Update your AWS credentials to analyze infrastructure in real-time</p>
+                </div>
+                <button id="backToDashboard" class="refresh-btn" style="padding: 10px 20px;">
+                    <i class="fa-solid fa-arrow-left"></i> Back to Dashboard
+                </button>
+            </div>
+            <form id="dashboardForm">
+                <div class="credentials-grid">
+                    <div class="form-group">
+                        <label for="awsAccessKey">AWS Access Key ID <span class="required">*</span></label>
+                        <input type="text" id="awsAccessKey" placeholder="AKIAIOSFODNN7EXAMPLE" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="awsSecretKey">AWS Secret Access Key <span class="required">*</span></label>
+                        <input type="password" id="awsSecretKey" placeholder="wJalrXUtnFEMI/..." required>
+                    </div>
+                </div>
+                
+                <div class="info-banner">
+                    <strong>ℹ️ Required AWS Permissions:</strong> EC2:Describe*, CloudWatch:GetMetricStatistics, CostExplorer:GetCostAndUsage, RDS:Describe*, Lambda:List*
+                </div>
+                
+                <button type="submit" class="analyze-button">
+                    <span id="analyzeButtonText"><i class="fa-solid fa-magnifying-glass-chart"></i> Analyze AWS Infrastructure</span>
+                </button>
+            </form>
+        </div>
+
+        <!-- Loading State -->
+        <div id="loadingState" style="display: none;">
+            <div class="loading-card">
+                <div class="loading-spinner"></div>
+                <h2>🔄 Analyzing Your AWS Infrastructure...</h2>
+                <p>Fetching real-time data from CloudWatch, EC2, RDS, Lambda, and Cost Explorer</p>
+                <div class="loading-progress">
+                    <div class="progress-bar" id="progressBar"></div>
+                </div>
+                <p class="loading-status" id="loadingStatus">Initializing connection...</p>
+            </div>
+        </div>
+
+        <!-- Main Dashboard Content -->
+        <div id="dashboardContent" style="display: none;">
+            
+            <!-- AWS Account Info Card -->
+            <div class="section-card" style="background: linear-gradient(135deg, #fefce8 0%, #eef2ff 100%); border-left: 5px solid #4f46e5; margin-bottom: 24px;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <h3 style="color: #3730a3; margin: 0 0 8px 0; font-size: 1.1rem;">
+                            <i class="fa-solid fa-cloud-arrow-up"></i> Connected AWS Account
+                        </h3>
+                        <p id="awsAccountInfo" style="margin: 0; font-size: 1.2rem; font-weight: 700; color: #495057;">--</p>
+                        <p id="lastUpdate" style="margin: 4px 0 0 0; font-size: 0.85rem; color: #6c757d;">--</p>
+                    </div>
+                    <div style="background: white; padding: 16px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+                        <i class="fa-brands fa-aws" style="font-size: 3rem; color: #ff9900;"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Cost Overview Section -->
+            <div class="section-card">
+                <div class="section-header">
+                    <h2><i class="fa-solid fa-dollar-sign"></i> Cost Overview</h2>
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <button id="toggleAutoRefresh" style="padding: 6px 12px; background: #10b981; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 0.85rem; font-weight: 600; display: none;">
+                            <i class="fa-solid fa-pause"></i> Pause Auto-Refresh
+                        </button>
+                        <div class="refresh-indicator" id="refreshIndicator" style="display: flex; flex-direction: column; align-items: flex-end; gap: 4px;">
+                            <span id="dataMode">● Real-Time Data</span>
+                            <span id="nextRefresh" style="font-size: 0.75rem; color: #6b7280;">Next refresh in: --</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="metrics-grid">
+                    <div class="metric-box primary">
+                        <div class="metric-label">Current Month Cost</div>
+                        <div class="metric-value" id="currentCost">$0.00</div>
+                        <div class="metric-change" id="costChange">--</div>
+                    </div>
+                    <div class="metric-box success">
+                        <div class="metric-label">Potential Monthly Savings</div>
+                        <div class="metric-value" id="potentialSavings">$0.00</div>
+                        <div class="metric-sublabel">Based on optimization opportunities</div>
+                    </div>
+                    <div class="metric-box info">
+                        <div class="metric-label">Forecasted Next Month</div>
+                        <div class="metric-value" id="forecastedCost">$0.00</div>
+                        <div class="metric-sublabel">AWS Cost Explorer projection</div>
+                    </div>
+                    <div class="metric-box warning">
+                        <div class="metric-label">Annual Savings Potential</div>
+                        <div class="metric-value" id="annualSavings">$0.00</div>
+                        <div class="metric-sublabel">If all optimizations applied</div>
+                    </div>
+                </div>
+
+                <!-- Cost Breakdown -->
+                <div class="cost-breakdown">
+                    <h3>Cost Breakdown by Service</h3>
+                    <div id="costBreakdownChart" class="chart-container"></div>
+                </div>
+            </div>
+
+            <!-- Infrastructure Overview Section -->
+            <div class="section-card">
+                <div class="section-header">
+                    <h2><i class="fa-solid fa-server"></i> Infrastructure Overview</h2>
+                </div>
+                <div class="infrastructure-grid">
+                    <div class="infra-card">
+                        <div class="infra-icon"><i class="fa-solid fa-desktop"></i></div>
+                        <div class="infra-title">EC2 Instances</div>
+                        <div class="infra-value" id="totalInstances">0</div>
+                        <div class="infra-details">
+                            <span class="status-running">● <span id="runningInstances">0</span> Running</span>
+                            <span class="status-stopped">● <span id="stoppedInstances">0</span> Stopped</span>
+                        </div>
+                    </div>
+                    <div class="infra-card">
+                        <div class="infra-icon"><i class="fa-solid fa-hard-drive"></i></div>
+                        <div class="infra-title">EBS Volumes</div>
+                        <div class="infra-value" id="totalVolumes">0</div>
+                        <div class="infra-details">
+                            <span><span id="totalStorageGB">0</span> GB Total</span>
+                            <span class="status-warning"><span id="unattachedVolumes">0</span> Unattached</span>
+                        </div>
+                    </div>
+                    <div class="infra-card">
+                        <div class="infra-icon"><i class="fa-solid fa-camera"></i></div>
+                        <div class="infra-title">Snapshots</div>
+                        <div class="infra-value" id="totalSnapshots">0</div>
+                        <div class="infra-details">
+                            <span class="status-warning"><span id="oldSnapshots">0</span> Old (>90 days)</span>
+                        </div>
+                    </div>
+                    <div class="infra-card">
+                        <div class="infra-icon"><i class="fa-solid fa-bolt"></i></div>
+                        <div class="infra-title">Lambda Functions</div>
+                        <div class="infra-value" id="totalLambda">0</div>
+                        <div class="infra-details">
+                            <span class="status-warning"><span id="underutilizedLambda">0</span> Underutilized</span>
+                        </div>
+                    </div>
+                    <div class="infra-card">
+                        <div class="infra-icon"><i class="fa-solid fa-database"></i></div>
+                        <div class="infra-title">RDS Instances</div>
+                        <div class="infra-value" id="totalRDS">0</div>
+                        <div class="infra-details">
+                            <span class="status-running">● All Databases</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Instance Limit Management & Auto-Shutdown Section -->
+            <div class="section-card" style="background: linear-gradient(135deg, #fff9e6 0%, #ffedd5 100%); border-left: 5px solid #f59e0b;">
+                <div class="section-header">
+                    <div>
+                        <h2 style="color: #d97706;"><i class="fa-solid fa-gauge-high"></i> Instance Limit Management & Auto-Shutdown</h2>
+                        <p style="font-size: 0.9rem; color: #92400e; margin: 5px 0 0 0;">Set CPU usage limits per instance. When exceeded, receive alerts and automatic shutdown after 30 seconds</p>
+                    </div>
+                    <button id="refreshAdvice" class="refresh-btn" style="background: #f59e0b; border: none;">
+                        <i class="fa-solid fa-sync"></i> Refresh
+                    </button>
+                </div>
+
+                <!-- Active Alerts Banner -->
+                <div id="activeAlertsBanner" style="display: none; background: #fee2e2; border: 2px solid #ef4444; border-radius: 12px; padding: 16px; margin-bottom: 20px; animation: pulse 2s infinite;">
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <i class="fa-solid fa-triangle-exclamation" style="font-size: 2rem; color: #dc2626;"></i>
+                        <div style="flex: 1;">
+                            <h3 style="margin: 0 0 8px 0; color: #991b1b; font-size: 1.1rem;">⚠️ Critical Alert: CPU Limit Exceeded!</h3>
+                            <div id="alertMessages" style="color: #7f1d1d; font-weight: 500;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Instance Limits List -->
+                <div id="instanceLimitsList" style="display: grid; gap: 16px; margin-top: 20px;">
+                    <div style="text-align: center; padding: 40px; color: #6b7280;">
+                        <i class="fa-solid fa-info-circle" style="font-size: 2rem; margin-bottom: 12px; display: block;"></i>
+                        <p>No running instances found or no limits set. Set limits below to enable automatic monitoring.</p>
+                    </div>
+                </div>
+
+                <!-- Add New Limit Form -->
+                <div style="margin-top: 24px; padding: 20px; background: white; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+                    <h3 style="margin: 0 0 16px 0; color: #374151;"><i class="fa-solid fa-plus-circle"></i> Set New Instance Limit</h3>
+                    <form id="setLimitForm" style="display: grid; grid-template-columns: 1fr 1fr auto; gap: 12px; align-items: end;">
+                        <div>
+                            <label style="display: block; margin-bottom: 6px; font-weight: 600; color: #4b5563; font-size: 0.9rem;">
+                                Select Instance
+                            </label>
+                            <select id="instanceSelect" required style="width: 100%; padding: 10px 14px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 0.95rem; background: white;">
+                                <option value="">-- Select Instance --</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label style="display: block; margin-bottom: 6px; font-weight: 600; color: #4b5563; font-size: 0.9rem;">
+                                CPU Limit (%)
+                            </label>
+                            <input type="number" id="cpuLimitInput" min="5" max="100" value="80" required style="width: 100%; padding: 10px 14px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 0.95rem;">
+                        </div>
+                        <button type="submit" style="padding: 12px 24px; background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: transform 0.2s; box-shadow: 0 2px 8px rgba(245, 158, 11, 0.3);">
+                            <i class="fa-solid fa-save"></i> Set Limit
+                        </button>
+                    </form>
+                    <div style="margin-top: 12px; padding: 12px; background: #fef3c7; border-left: 4px solid #f59e0b; border-radius: 6px; font-size: 0.85rem; color: #78350f;">
+                        <strong>ℹ️ How it works:</strong> When an instance exceeds the set CPU limit, you'll receive an immediate alert. After 30 seconds, if the usage remains high, the instance will be automatically stopped via AWS Lambda to prevent cost overruns.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Optimization Opportunities Section -->
+            <div class="two-column-grid">
+                <div class="section-card">
+                    <div class="section-header">
+                        <h2><i class="fa-solid fa-triangle-exclamation"></i> Underutilized EC2 Instances</h2>
+                        <span class="badge" id="ec2Badge">0</span>
+                    </div>
+                    <div id="ec2IssuesList" class="issues-list"></div>
+                </div>
+
+                <div class="section-card">
+                    <div class="section-header">
+                        <h2><i class="fa-solid fa-hard-drive"></i> EBS Volume Opportunities</h2>
+                        <span class="badge" id="ebsBadge">0</span>
+                    </div>
+                    <div id="ebsIssuesList" class="issues-list"></div>
+                </div>
+            </div>
+
+            <!-- Additional Optimization Sections -->
+            <div class="two-column-grid">
+                <div class="section-card">
+                    <div class="section-header">
+                        <h2><i class="fa-solid fa-camera"></i> Snapshot Cleanup</h2>
+                        <span class="badge" id="snapshotBadge">0</span>
+                    </div>
+                    <div id="snapshotsList" class="issues-list"></div>
+                </div>
+
+                <div class="section-card">
+                    <div class="section-header">
+                        <h2><i class="fa-solid fa-database"></i> RDS Optimization</h2>
+                        <span class="badge" id="rdsBadge">0</span>
+                    </div>
+                    <div id="rdsList" class="issues-list"></div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- AI Assistant Section (Separate View) -->
+        <div id="aiAssistantSection" style="display: none;">
+            <!-- AI Advisor Section - Subdivided -->
+            <div class="section-card ai-section">
+                <div class="section-header">
+                    <h2><i class="fa-solid fa-robot"></i> AI Cost Optimization Advisor</h2>
+                    <button id="refreshAdviceAI" class="refresh-btn"><i class="fa-solid fa-arrows-rotate"></i> Refresh</button>
+                </div>
+                
+                <div class="ai-advisor-grid">
+                    <!-- Critical Issues -->
+                    <div class="advisor-subsection critical">
+                        <div class="subsection-icon"><i class="fa-solid fa-circle-exclamation"></i></div>
+                        <h3>Critical Issues</h3>
+                        <div id="aiCriticalIssues" class="advisor-content markdown-content">
+                            <p class="loading-text">Analyzing...</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Quick Wins -->
+                    <div class="advisor-subsection success">
+                        <div class="subsection-icon"><i class="fa-solid fa-bolt"></i></div>
+                        <h3>Quick Wins</h3>
+                        <div id="aiQuickWins" class="advisor-content markdown-content">
+                            <p class="loading-text">Analyzing...</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Long-term Strategy -->
+                    <div class="advisor-subsection info">
+                        <div class="subsection-icon"><i class="fa-solid fa-chart-line"></i></div>
+                        <h3>Long-term Strategy</h3>
+                        <div id="aiLongTerm" class="advisor-content markdown-content">
+                            <p class="loading-text">Analyzing...</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Savings Estimate -->
+                    <div class="advisor-subsection primary">
+                        <div class="subsection-icon"><i class="fa-solid fa-piggy-bank"></i></div>
+                        <h3>Savings Impact</h3>
+                        <div id="aiSavingsImpact" class="advisor-content markdown-content">
+                            <p class="loading-text">Calculating...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Interactive Query Section -->
+            <div class="section-card query-section">
+                <div class="section-header">
+                    <h2><i class="fa-solid fa-comment-dots"></i> Ask AI Assistant</h2>
+                    <p>Get instant answers about AWS cost optimization, best practices, and specific recommendations</p>
+                </div>
+                <div class="query-interface">
+                    <div class="query-input-group">
+                        <textarea 
+                            id="userQuery" 
+                            placeholder="Ask anything about AWS cost optimization, e.g., 'How can I reduce my RDS costs?' or 'What are the best practices for EC2 rightsizing?'"
+                            rows="3"></textarea>
+                        <button id="askButton" class="ask-button">
+                            <span id="askButtonText"><i class="fa-solid fa-paper-plane"></i> Ask AI</span>
+                        </button>
+                    </div>
+                    <div class="context-toggle">
+                        <label>
+                            <input type="checkbox" id="useContext" checked>
+                            Use my AWS data for context-aware answers
+                        </label>
+                    </div>
+                    <div id="queryResponse" class="query-response markdown-content" style="display: none;"></div>
+                </div>
+                
+                <!-- Quick Questions -->
+                <div class="quick-questions">
+                    <h4>Quick Questions:</h4>
+                    <div class="question-chips">
+                        <button class="chip-btn" data-question="What are my biggest cost drivers?"><i class="fa-solid fa-dollar-sign"></i> Biggest cost drivers?</button>
+                        <button class="chip-btn" data-question="How can I optimize my EC2 instances?"><i class="fa-solid fa-desktop"></i> Optimize EC2?</button>
+                        <button class="chip-btn" data-question="Should I use Reserved Instances or Savings Plans?"><i class="fa-solid fa-credit-card"></i> Reserved vs Savings Plans?</button>
+                        <button class="chip-btn" data-question="How to reduce RDS costs?"><i class="fa-solid fa-database"></i> Reduce RDS costs?</button>
+                        <button class="chip-btn" data-question="What is my this month cost"><i class="fa-solid fa-box"></i> What is my this month cost?</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Historical Trends Section (Separate View) -->
+        <div id="historicalTrendsSection" style="display: none;">
+            <!-- Historical Trends Section with Graph -->
+            <div class="section-card">
+                <div class="section-header">
+                    <h2><i class="fa-solid fa-chart-line"></i> Historical Cost Trends</h2>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1.5fr; gap: 24px;" class="history-grid-layout">
+                    <div id="historyContent" class="history-content"></div>
+                    <div class="history-chart-container">
+                        <canvas id="historyChart" style="width: 100%; height: 100%;"></canvas>
+                    </div>
+                </div>
+
+                <!-- Auto-Stopped Instances History -->
+                <div style="margin-top: 32px; padding-top: 24px; border-top: 2px solid #e5e7eb;">
+                    <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 20px;">
+                        <i class="fa-solid fa-power-off" style="font-size: 1.5rem; color: #ef4444;"></i>
+                        <h3 style="margin: 0; font-size: 1.2rem; color: #1f2937;">Recent Auto-Stopped Instances</h3>
+                    </div>
+                    <div id="autoStoppedHistory" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px;">
+                        <div style="text-align: center; padding: 40px; color: #6b7280; grid-column: 1 / -1;">
+                            <i class="fa-solid fa-info-circle" style="font-size: 2rem; margin-bottom: 12px; display: block;"></i>
+                            <p>No instances have been auto-stopped yet</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    </div>
+
+    <!-- Modal -->
+    <div id="messageModal" class="modal">
+        <div class="modal-content">
+            <h3 id="modalTitle"></h3>
+            <p id="modalMessage"></p>
+            <div class="modal-button-group">
+                <button id="modalOkButton">OK</button>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
