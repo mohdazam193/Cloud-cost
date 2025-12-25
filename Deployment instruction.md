@@ -116,9 +116,9 @@ These instructions will guide you through deploying the application on your loca
 
 ## 3. AWS Lambda Function Deployment
 
-The application uses two AWS Lambda functions for automated tasks. They must be deployed separately in your AWS account.
+The application uses two AWS Lambda functions for automated tasks. They must be deployed separately in your AWS account. You can deploy them manually by following the steps below, or use the automated script for a quicker setup.
 
-### A. Deploying `cloudwatch-fetcher`
+### A. Manual Deployment: `cloudwatch-fetcher`
 
 This function periodically fetches EC2 metrics from CloudWatch and sends them to your main application.
 
@@ -153,7 +153,7 @@ This function periodically fetches EC2 metrics from CloudWatch and sends them to
     *   **Schedule expression:** `rate(1 day)`.
     *   Click **Add**.
 
-### B. Deploying `instance-auto-shutdown`
+### B. Manual Deployment: `instance-auto-shutdown`
 
 This function stops an EC2 instance when triggered by your application.
 
@@ -178,6 +178,36 @@ This function stops an EC2 instance when triggered by your application.
     *   **Security:** Open.
     *   Click **Add**.
     *   The **API endpoint** URL will be displayed. You will need to configure this URL in your main application's settings so it can call this Lambda function.
+
+### C. Automated Deployment with AWS CLI
+
+For a faster, more streamlined deployment, you can use the provided `deploy_lambdas.sh` script. This script automates the creation of the IAM roles, packaging the Lambda code, and deploying the functions.
+
+**Prerequisites:**
+
+*   [AWS CLI](https://aws.amazon.com/cli/) installed and configured with your AWS credentials.
+*   The `zip` command-line tool must be installed.
+
+**Steps:**
+
+1.  **Make the script executable:**
+    ```bash
+    chmod +x aws-cli/deploy_lambdas.sh
+    ```
+
+2.  **Update the S3 Bucket Name:**
+    Open the `aws-cli/deploy_lambdas.sh` file and replace the placeholder value for `S3_BUCKET_NAME` with a globally unique S3 bucket name.
+    ```bash
+    # TODO: Replace with your desired unique S3 bucket name.
+    S3_BUCKET_NAME="costinsight-lambda-code-bucket-your-unique-name"
+    ```
+
+3.  **Run the deployment script** from the root of the project:
+    ```bash
+    ./aws-cli/deploy_lambdas.sh
+    ```
+
+The script will handle the creation of all necessary AWS resources. After the script finishes, it will output the names of the created resources. You will still need to manually configure the API Gateway and EventBridge triggers as described in the manual steps.
 
 ---
 
