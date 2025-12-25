@@ -50,6 +50,7 @@
     <li><a href="#-contributing">Contributing</a></li>
     <li><a href="#-license">License</a></li>
     <li><a href="#-contact">Contact</a></li>
+    <li><a href="#-credits">Credits</a></li>
   </ol>
 </details>
 
@@ -267,3 +268,9 @@ Distributed under the MIT License. See `LICENSE` for more information.
 Project Admin - mohdazam193
 
 Project Link: [https://github.com/mohdazam193/Cloud-cost](https://github.com/mohdazam193/Cloud-cost)
+
+---
+
+## 🙏 Credits
+
+This project is a fork of [ananyagla/MiniProject_2025](https://github.com/ananyagla/MiniProject_2025). We are grateful for their foundational work.
