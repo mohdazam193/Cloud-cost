@@ -118,67 +118,6 @@ These instructions will guide you through deploying the application on your loca
 
 The application uses two AWS Lambda functions for automated tasks. They must be deployed separately in your AWS account. You can deploy them manually by following the steps below, or use the automated script for a quicker setup.
 
-### A. Manual Deployment: `cloudwatch-fetcher`
-
-This function periodically fetches EC2 metrics from CloudWatch and sends them to your main application.
-
-1.  **Create IAM Role:**
-    *   Navigate to **IAM > Roles** in the AWS Console and click **Create role**.
-    *   **Trusted entity:** AWS service, **Use case:** Lambda.
-    *   **Permissions:** Attach the following AWS managed policies:
-        *   `AWSLambdaBasicExecutionRole` (for logs)
-        *   `CloudWatchReadOnlyAccess`
-        *   `AmazonEC2ReadOnlyAccess`
-    *   **Role name:** `CostInsight-CloudWatchFetcher-Role`.
-
-2.  **Create Lambda Function:**
-    *   Navigate to the **Lambda** service and click **Create function**.
-    *   **Name:** `CostInsight-CloudWatchFetcher`
-    *   **Runtime:** Node.js 18.x
-    *   **Permissions:** Use an existing role and select `CostInsight-CloudWatchFetcher-Role`.
-    *   Create the function.
-
-3.  **Configure Code and Environment:**
-    *   Copy the full content of `lambda/cloudwatch-fetcher.js` into the **Code source** editor and click **Deploy**.
-    *   Go to **Configuration > Environment variables** and add:
-        *   `API_ENDPOINT`: The public URL of your application's API. For local testing, you may need a tool like `ngrok` to get a public URL for `http://localhost:3000`.
-        *   `API_KEY`: Your `JWT_SECRET` value from the `.env` file.
-        *   `AWS_REGION`: The AWS region you wish to monitor (e.g., `us-east-1`).
-
-4.  **Set Up Trigger:**
-    *   In the function overview, click **Add trigger**.
-    *   Select **EventBridge (CloudWatch Events)**.
-    *   Choose **Create a new rule**.
-    *   **Rule name:** `CostInsight-Daily-Trigger`.
-    *   **Schedule expression:** `rate(1 day)`.
-    *   Click **Add**.
-
-### B. Manual Deployment: `instance-auto-shutdown`
-
-This function stops an EC2 instance when triggered by your application.
-
-1.  **Create IAM Role:**
-    *   Create another IAM role for Lambda named `CostInsight-AutoShutdown-Role`.
-    *   **Permissions:** Attach the following policies:
-        *   `AWSLambdaBasicExecutionRole`
-        *   `AmazonEC2FullAccess` (For better security, create a custom policy allowing only `ec2:StopInstances` and `ec2:DescribeInstances`).
-
-2.  **Create Lambda Function:**
-    *   Create a new Lambda function named `CostInsight-AutoShutdown`.
-    *   **Runtime:** Node.js 18.x
-    *   **Permissions:** Use the `CostInsight-AutoShutdown-Role`.
-
-3.  **Configure Code:**
-    *   Copy the content of `lambda/instance-auto-shutdown.js` into the **Code source** editor and click **Deploy**.
-
-4.  **Set Up API Gateway Trigger:**
-    *   Click **Add trigger** and select **API Gateway**.
-    *   Choose **Create a new API**.
-    *   **API type:** HTTP API.
-    *   **Security:** Open.
-    *   Click **Add**.
-    *   The **API endpoint** URL will be displayed. You will need to configure this URL in your main application's settings so it can call this Lambda function.
-
 ### C. Automated Deployment with AWS CLI
 
 For a faster, more streamlined deployment, you can use the provided `deploy_lambdas.sh` script. This script automates the creation of the IAM roles, packaging the Lambda code, and deploying the functions.
@@ -207,7 +146,47 @@ For a faster, more streamlined deployment, you can use the provided `deploy_lamb
     ./aws-cli/deploy_lambdas.sh
     ```
 
-The script will handle the creation of all necessary AWS resources. After the script finishes, it will output the names of the created resources. You will still need to manually configure the API Gateway and EventBridge triggers as described in the manual steps.
+The script will handle the creation of all necessary AWS resources. After the script finishes, it will output the names of the created resources.
+
+### D. Post-Deployment Configuration
+
+After deploying the Lambda functions, you need to configure triggers and environment variables so they can be executed.
+
+#### 1. `CostInsight-CloudWatchFetcher`
+
+This function runs on a schedule to fetch metrics from CloudWatch.
+
+*   **Set Up a Scheduled Trigger (EventBridge):**
+    *   Navigate to the [AWS Lambda Console](https://console.aws.amazon.com/lambda/).
+    *   Click on the `CostInsight-CloudWatchFetcher` function.
+    *   Click **Add trigger**.
+    *   Select **EventBridge (CloudWatch Events)** as the trigger source.
+    *   Choose **Create a new rule**.
+    *   Give the rule a name (e.g., `Run-Fetcher-Hourly`).
+    *   Under **Schedule expression**, select **Rate-based schedule** and set it to `1 hour`.
+    *   Click **Add**.
+
+*   **Configure Environment Variables:**
+    *   In the `CostInsight-CloudWatchFetcher` function page, go to **Configuration > Environment variables**.
+    *   Click **Edit** and add the following:
+        *   **Key:** `API_ENDPOINT`
+          **Value:** The URL of your backend API endpoint (e.g., `https://<your-app-url>/api/cloud-data`).
+        *   **Key:** `API_KEY`
+          **Value:** A secret key for authenticating with your backend.
+
+#### 2. `CostInsight-AutoShutdown`
+
+This function is triggered via an API call to shut down EC2 instances.
+
+*   **Set Up an API Gateway Trigger:**
+    *   Navigate to the `CostInsight-AutoShutdown` function in the Lambda Console.
+    *   Click **Add trigger**.
+    *   Select **API Gateway**.
+    *   Choose **Create a new API**.
+    *   Select **HTTP API** for the API type.
+    *   Set the **Security** to **Open**.
+    *   Click **Add**.
+    *   The API endpoint URL will be displayed. You'll need this URL to configure your main application.
 
 ---
 
