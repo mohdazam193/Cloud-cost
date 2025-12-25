@@ -1,165 +1,119 @@
-<h1 align="center">☁️ Cloudana CostInsight</h1>
+# CostInsight
 
-<p align="center">
-  <img src="https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white" />
-  <img src="https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white" />
-  <img src="https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black" />
-  <img src="https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white" />
-  <img src="https://img.shields.io/badge/AWS%20Lambda-FF9900?style=for-the-badge&logo=awslambda&logoColor=white" />
-  <img src="https://img.shields.io/badge/Amazon%20CloudWatch-FF4F8B?style=for-the-badge&logo=amazoncloudwatch&logoColor=white" />
-  <img src="https://img.shields.io/badge/MongoDB-47A248?style=for-the-badge&logo=mongodb&logoColor=white" />
-</p>
-
----
-
-**CostInsight** is a web app to **monitor and optimize cloud costs**.
-It uses **Node.js, Express, HTML, JS, MongoDB, and AWS services**.
-Features include real-time cost tracking, risk alerts, optimization advice, statistical charts, and a **chatbot** for user help.
-
-The app also uses **AWS Lambda** to fetch CloudWatch metrics and automatically shut down instances when limits are reached.
-
-**Deployed on Vercel:** https://mini-project-2025-fq57.vercel.app/
-
----
-
-## Project Preview
-
-<!-- 2x3 Grid -->
-| Login / Sign Up Page | AWS Credential Page |
-|---------------------|-------------------|
-| <img src="images/auth.png" alt="Login/Sign Up Page" width="300" style="border:2px solid white;"> | <img src="images/credentials.png" alt="AWS Credential Page" width="300" style="border:2px solid white;"> |
-
-| Cost Dashboard | Infrastructure Dashboard |
-|----------------|------------------------|
-| <img src="images/pic0.png" alt="Cost Dashboard" width="300" style="border:2px solid white;"> | <img src="images/pic1.png" alt="Infrastructure Dashboard" width="300" style="border:2px solid white;"> |
-
-| Instance Management Dashboard | Advisory Dashboard |
-|------------------------------|------------------|
-| <img src="images/pic2.png" alt="Instance Management Dashboard" width="300" style="border:2px solid white;"> | <img src="images/pic3.png" alt="Advisory Dashboard" width="300" style="border:2px solid white;"> |
-
-<!-- Full-width image row -->
-| History Logs & AI Assistant | |
-|-----------------------------|----------------|
-| <img src="images/pic4.png" alt="History Logs & AI Assistant" width="620" style="border:2px solid white;"> | |
-
-
-  
----
-
-## Project Structure
-
-```
-MiniProject-Cloud/
-│
-├─ backend/
-│   ├─ middleware/       # Authentication
-│   ├─ models/           # MongoDB models (User, CloudHistory)
-│   ├─ routes/           # Express routes
-│   ├─ services/         # AWS and cost analysis functions
-│   └─ server.js         # Server setup
-│
-├─ frontend/
-│   ├─ css/              # Styles
-│   ├─ pages/            # HTML pages
-│   └─ scripts/          # JS for auth, dashboard, signup
-│
-├─ lambda/
-│   ├─ cloudwatch-fetcher.js       # Fetch CloudWatch metrics
-│   └─ instance-auto-shutdown.js   # Auto shutdown instances
-│
-├─ .env                    # Environment variables
-├─ package.json
-└─ package-lock.json
-```
-
----
+CostInsight is a cloud cost optimization tool that provides real-time monitoring and AI-driven advice to help you reduce your cloud spending. This tool now supports both AWS and Azure, and it is deployed using Docker and Kubernetes, with monitoring provided by Prometheus and Grafana.
 
 ## Features
 
-* **AWS Lambda Functions**:
+- **Cloud Cost Optimization:** Get actionable insights and recommendations to reduce your cloud costs.
+- **AI-Driven Advice:** Leverage the power of Google's Gemini AI to get expert advice on your cloud infrastructure.
+- **Real-Time Monitoring:** Monitor your cloud resources in real-time to identify and address issues as they happen.
+- **Multi-Cloud Support:** Connect to both AWS and Azure to get a holistic view of your cloud spending.
+- **Containerized Deployment:** The application is deployed using Docker and Kubernetes for scalability and portability.
+- **Application Monitoring:** The application is monitored using Prometheus and Grafana to provide insights into its performance.
 
-  * Fetch CloudWatch metrics for cost tracking
-  * Auto shutdown instances based on limits
-* **Web App**:
+## Architecture
 
-  * Dashboard for live monitoring and cost stats
-  * High-cost service alerts
-  * Optimization advice
-  * Statistical charts
-  * Chatbot for user support
-* **Backend & Database**:
+The application is composed of the following components:
 
-  * Node.js + Express
-  * MongoDB for user data and cloud history
-  * Gemini API integration
+- **Frontend:** A web-based dashboard built with HTML, CSS, and JavaScript.
+- **Backend:** A Node.js application that provides a RESTful API for the frontend.
+- **Database:** A MongoDB database to store user data, analysis history, and instance limits.
+- **Docker:** The application is containerized using Docker for consistent and portable deployments.
+- **Kubernetes:** The application is deployed to a Kubernetes cluster for scalability and high availability.
+- **Prometheus:** Prometheus is used to scrape metrics from the application for monitoring.
+- **Grafana:** Grafana is used to visualize the metrics collected by Prometheus.
 
----
+## Getting Started
 
-## Setup Instructions
+To get started with CostInsight, you will need the following:
 
-1. **Clone the project**:
+- A Docker Hub account
+- A Kubernetes cluster
+- A MongoDB database
+- An AWS account and/or an Azure account
+- A Google Gemini API key
 
-```bash
-git clone https://github.com/ananyagla/Mini-Project_2025
-cd MiniProject-Cloud
-```
+Once you have these prerequisites, you can deploy the application by following the instructions in the `.github/workflows/main.yaml` file.
 
-2. **Install dependencies**:
+## Local Deployment using Docker Desktop and Kubernetes
 
-```bash
-npm install
-```
+To deploy the application locally using Docker Desktop and Kubernetes, follow these steps:
 
-3. **Set environment variables** in `.env`:
+1.  **Prerequisites:**
+    *   [Docker Desktop](https://www.docker.com/products/docker-desktop) installed and running with Kubernetes enabled.
+    *   `kubectl` command-line tool installed.
+    *   Create a `.env` file in the root of the project with the following environment variables:
 
-```
-API_ENDPOINT=<Your Backend API URL>
-API_KEY=<Your Auth Key>
-MONGO_URI=<Your MongoDB URI>
-```
+        ```
+        MONGO_URI="your_mongodb_uri"
+        GEMINI_API_KEY="your_gemini_api_key"
+        JWT_SECRET="your_jwt_secret"
+        ```
 
-4. **Run locally**:
+2.  **Update the Kubernetes Deployment:**
 
-```bash
-npm start
-```
+    *   Open the `kubernetes/deployment.yaml` file.
+    *   Replace `YOUR_DOCKER_HUB_USERNAME` with your Docker Hub username.
 
-5. **Open in browser**:
+3.  **Build and Push the Docker Image:**
 
-```
-http://localhost:3000
-```
+    *   Log in to Docker Hub:
 
----
+        ```bash
+        docker login
+        ```
 
-## Usage
+    *   Build the Docker image:
 
-* Sign up or log in
-* Check the dashboard for live stats
-* Get cost alerts and optimization advice
-* Use chatbot for help
-* Lambda functions handle automatic metric fetching and instance shutdown
+        ```bash
+        docker build -t YOUR_DOCKER_HUB_USERNAME/costinsight:latest .
+        ```
 
----
+    *   Push the Docker image to Docker Hub:
 
-## Technologies Used
+        ```bash
+        docker push YOUR_DOCKER_HUB_USERNAME/costinsight:latest
+        ```
 
-* **Frontend:** HTML, CSS, JS
-* **Backend:** Node.js, Express.js
-* **Database:** MongoDB
-* **Cloud Services:** AWS Lambda, CloudWatch, EC2
-* **API:** Gemini API
+4.  **Create Kubernetes Secrets:**
 
----
+    *   Create a Kubernetes secret from the `.env` file:
 
-## Contribution
+        ```bash
+        kubectl create secret generic costinsight-secrets --from-env-file=.env
+        ```
 
-Contributions welcome. Open an issue or pull request.
+5.  **Deploy the Application:**
 
----
+    *   Apply the Kubernetes deployment and service configurations:
 
-## License
+        ```bash
+        kubectl apply -f kubernetes/deployment.yaml
+        kubectl apply -f kubernetes/service.yaml
+        ```
 
-©CostInsight - 2025
+6.  **Verify the Deployment:**
 
----
+    *   Check the status of the pods:
+
+        ```bash
+        kubectl get pods
+        ```
+
+        You should see the `costinsight-deployment` pods in the `Running` state.
+
+    *   Check the status of the services:
+
+        ```bash
+        kubectl get services
+        ```
+
+        You should see the `costinsight-service` with a `LoadBalancer` type.
+
+7.  **Access the Application:**
+
+    *   On Docker Desktop, the service will be available on `localhost`. Open your browser and navigate to [http://localhost](http://localhost) to access the application.
+
+## Contributing
+
+Contributions are welcome! If you have any ideas for new features or improvements, please open an issue or submit a pull request.
