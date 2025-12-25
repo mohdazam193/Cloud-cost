@@ -1,45 +1,44 @@
-/* === Modern Black & Gray UI Style === */
+/* === Modern & User-Friendly UI Style === */
 
-/* Import Inter font */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+/* Import a modern font like Roboto or Open Sans */
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
 
 :root {
-    /* Color Scheme - Black & Gray Palette */
-    --color-primary: #ffffff; /* White Accent */
-    --color-primary-light: #f5f5f5;
-    --color-primary-dark: #e0e0e0;
+    /* Color Scheme - Light & Blue */
+    --color-primary: #007BFF; /* Bright Blue */
+    --color-primary-light: #e6f2ff;
+    --color-primary-dark: #0056b3;
     
-    --color-background: #121212; /* Dark Background */
-    --color-surface: #1e1e1e; /* Dark Surface */
-    --color-surface-hover: #2a2a2a;
+    --color-background: #f8f9fa; /* Light Gray Background */
+    --color-surface: #ffffff; /* White Surface */
+    --color-surface-hover: #f1f3f5;
     
-    --color-text: #ffffff; /* White Text */
-    --color-text-secondary: #a0a0a0; /* Light Gray */
-    --color-text-light: #757575;
-    --color-text-black: #000000;
+    --color-text: #212529; /* Dark Gray Text */
+    --color-text-secondary: #6c757d; /* Medium Gray */
+    --color-text-light: #adb5bd;
 
-    --color-success: #4caf50; /* Green */
-    --color-warning: #ff9800; /* Orange */
-    --color-error: #f44336;   /* Red */
-    --color-info: #2196f3;    /* Blue */
+    --color-success: #28a745; /* Green */
+    --color-warning: #ffc107; /* Yellow */
+    --color-error: #dc3545;   /* Red */
+    --color-info: #17a2b8;    /* Teal */
     
     /* Border Colors */
-    --border-color: #424242;
-    --border-color-light: #616161;
+    --border-color: #dee2e6;
+    --border-color-light: #e9ecef;
     
-    /* Shadows - Subtle */
-    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.12);
-    --shadow-md: 0 4px 10px rgba(0, 0, 0, 0.24);
-    --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.3);
+    /* Shadows - Soft & Subtle */
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
     
     /* Transitions */
-    --transition-fast: 0.2s cubic-bezier(0.25, 0.1, 0.25, 1);
-    --transition-normal: 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
+    --transition-fast: 0.2s ease-in-out;
+    --transition-normal: 0.3s ease-in-out;
     
     /* Border Radius */
-    --radius-sm: 6px;
-    --radius-md: 12px;
-    --radius-lg: 18px;
+    --radius-sm: 4px;
+    --radius-md: 8px;
+    --radius-lg: 16px;
     
     /* Spacing */
     --spacing-sm: 8px;
@@ -60,7 +59,7 @@ html {
 }
 
 body {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-family: 'Roboto', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
     background-color: var(--color-background);
     color: var(--color-text);
     line-height: 1.6;
@@ -73,17 +72,17 @@ body {
 .header {
     background: var(--color-surface);
     color: var(--color-text);
-    padding: 20px 0;
-    box-shadow: 0 1px 0 var(--border-color);
+    padding: 16px 0;
+    border-bottom: 1px solid var(--border-color);
+    box-shadow: var(--shadow-sm);
     position: sticky;
     top: 0;
     z-index: 1000;
 }
 
 .header h1 {
-    font-size: 1.7rem;
+    font-size: 1.6rem;
     font-weight: 700;
-    letter-spacing: -0.5px;
     display: flex;
     align-items: center;
     gap: 12px;
@@ -112,19 +111,19 @@ body {
 }
 
 .section-card:hover {
-    transform: translateY(-4px);
+    transform: translateY(-5px);
     box-shadow: var(--shadow-lg);
 }
 
 .section-header {
     margin-bottom: var(--spacing-lg);
     padding-bottom: var(--spacing-md);
-    border-bottom: 1px solid var(--border-color);
+    border-bottom: 1px solid var(--border-color-light);
 }
 
 .section-header h2 {
-    font-size: 1.5rem;
-    font-weight: 600;
+    font-size: 1.4rem;
+    font-weight: 500;
     color: var(--color-text);
     display: flex;
     align-items: center;
@@ -132,7 +131,7 @@ body {
 }
 
 .section-header h2 i {
-    color: var(--color-text-secondary);
+    color: var(--color-primary);
     font-size: 1.3rem;
 }
 
@@ -153,7 +152,7 @@ input[type="email"] {
     border: 1px solid var(--border-color);
     border-radius: var(--radius-md);
     font-size: 1rem;
-    font-family: 'Inter', sans-serif;
+    font-family: 'Roboto', sans-serif;
     transition: all var(--transition-fast);
     background: var(--color-background);
     color: var(--color-text);
@@ -162,33 +161,36 @@ input[type="email"] {
 input:focus {
     outline: none;
     border-color: var(--color-primary);
-    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.3);
+    box-shadow: 0 0 0 3px var(--color-primary-light);
 }
 
 /* Buttons */
 .analyze-button,
 button[type="submit"] {
     width: 100%;
-    padding: 15px 28px;
-    background-color: var(--color-primary);
-    color: var(--color-text-black);
+    padding: 14px 28px;
+    background: linear-gradient(90deg, var(--color-primary), var(--color-primary-dark));
+    color: #ffffff;
     border: none;
     border-radius: var(--radius-md);
     font-size: 1rem;
-    font-weight: 600;
+    font-weight: 500;
     cursor: pointer;
     transition: all var(--transition-fast);
+    box-shadow: var(--shadow-sm);
 }
 
 .analyze-button:hover,
 button[type="submit"]:hover {
-    background-color: var(--color-primary-dark);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+    background: linear-gradient(90deg, var(--color-primary-dark), var(--color-primary));
 }
 
 /* Metrics Grid */
 .metrics-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
     gap: var(--spacing-lg);
 }
 
@@ -196,20 +198,21 @@ button[type="submit"]:hover {
     background: var(--color-surface);
     padding: var(--spacing-lg);
     border-radius: var(--radius-lg);
+    border: 1px solid var(--border-color-light);
     transition: all var(--transition-normal);
 }
 
 .metric-label {
-    font-size: 0.85rem;
+    font-size: 0.9rem;
     font-weight: 500;
     color: var(--color-text-secondary);
     margin-bottom: var(--spacing-sm);
 }
 
 .metric-value {
-    font-size: 2.5rem;
+    font-size: 2.2rem;
     font-weight: 700;
-    color: var(--color-text);
+    color: var(--color-primary);
     line-height: 1.2;
 }
 
@@ -217,49 +220,57 @@ button[type="submit"]:hover {
 .issues-list {
     max-height: 400px;
     overflow-y: auto;
+    padding-right: 10px;
 }
 
 .issue-item {
-    background: var(--color-surface);
+    background: var(--color-surface-hover);
     padding: var(--spacing-md);
     border-radius: var(--radius-md);
     margin-bottom: var(--spacing-md);
     border-left: 4px solid var(--color-warning);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .issue-title {
-    font-weight: 600;
+    font-weight: 500;
     color: var(--color-text);
 }
 
 .savings-badge {
     background: var(--color-success);
-    color: var(--color-text-black);
-    padding: 4px 10px;
+    color: #ffffff;
+    padding: 6px 12px;
     border-radius: var(--radius-sm);
-    font-size: 0.8rem;
-    font-weight: 600;
+    font-size: 0.85rem;
+    font-weight: 500;
+    white-space: nowrap;
 }
 
 /* AI Section */
 .ai-content {
-    background: var(--color-surface);
+    background-color: var(--color-primary-light);
+    border: 1px solid var(--border-color);
     padding: 24px;
     border-radius: var(--radius-lg);
     min-height: 250px;
     max-height: 500px;
     overflow-y: auto;
+    color: var(--color-text);
 }
 
 .markdown-content h2 {
     font-size: 1.3rem;
-    font-weight: 600;
+    font-weight: 700;
     margin: 16px 0 10px;
-    color: var(--color-text);
+    color: var(--color-primary-dark);
 }
 
 .markdown-content ul {
     margin-left: 20px;
+    line-height: 1.8;
 }
 
 /* Utility Classes */
@@ -267,4 +278,17 @@ button[type="submit"]:hover {
     display: none;
 }
 
-/* You can add more specific styles as needed */
+/* Responsive adjustments if needed */
+@media (max-width: 768px) {
+    .container {
+        padding: var(--spacing-md);
+    }
+    
+    .header h1 {
+        font-size: 1.4rem;
+    }
+    
+    .section-card {
+        padding: var(--spacing-lg);
+    }
+}
