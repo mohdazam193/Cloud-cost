@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name-="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings - CostInsight</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <header>
+        <h1>CostInsight</h1>
+        <nav>
+            <a href="/">Dashboard</a>
+            <a href="/settings.html">Settings</a>
+        </nav>
+    </header>
+    <main>
+        <section id="cloud-provider-settings">
+            <h2>Cloud Provider Settings</h2>
+            <form id="cloud-settings-form">
+                <div class="provider-section">
+                    <h3>AWS (Amazon Web Services)</h3>
+                    <label><input type="checkbox" id="aws-enabled"> Enable AWS</label>
+                    <div id="aws-credentials">
+                        <label for="aws-access-key-id">Access Key ID</label>
+                        <input type="text" id="aws-access-key-id" name="aws-access-key-id">
+                        <label for="aws-secret-access-key">Secret Access Key</label>
+                        <input type="password" id="aws-secret-access-key" name="aws-secret-access-key">
+                        <label for="aws-region">Default Region</label>
+                        <input type="text" id="aws-region" name="aws-region" value="us-east-1">
+                    </div>
+                </div>
+                <div class="provider-section">
+                    <h3>Azure</h3>
+                    <label><input type="checkbox" id="azure-enabled"> Enable Azure</label>
+                    <div id="azure-credentials">
+                        <label for="azure-client-id">Client ID</label>
+                        <input type="text" id="azure-client-id" name="azure-client-id">
+                        <label for="azure-client-secret">Client Secret</label>
+                        <input type="password" id="azure-client-secret" name="azure-client-secret">
+                        <label for="azure-tenant-id">Tenant ID</label>
+                        <input type="text" id="azure-tenant-id" name="azure-tenant-id">
+                        <label for="azure-subscription-id">Subscription ID</label>
+                        <input type="text" id="azure-subscription-id" name="azure-subscription-id">
+                    </div>
+                </div>
+                <button type="submit">Save Settings</button>
+            </form>
+        </section>
+    </main>
+    <script src="/js/settings.js"></script>
+</body>
+</html>

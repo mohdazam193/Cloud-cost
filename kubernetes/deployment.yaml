@@ -16,6 +16,6 @@ spec:
     spec:
       containers:
       - name: costinsight
-        image: YOUR_DOCKER_HUB_USERNAME/costinsight:latest
+        image: aazammohammad193/costinsight:latest
         ports:
         - containerPort: 3000
