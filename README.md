@@ -17,7 +17,7 @@
   <p align="center">
     Monitor your cloud, get AI advice, and cut costs.
     <br />
-    <a href="https://github.com/mohdazam193/Cloud-cost"><strong>Explore the docs »</strong></a>
+    <a href="Layman%20Steps.md"><strong>Explore the docs »</strong></a>
     <br />
     <br />
     <a href="https://github.com/mohdazam193/Cloud-cost/issues">Report Bug</a>
@@ -60,7 +60,7 @@
 ```mermaid
 graph TD
     subgraph "User's Browser"
-        A[User] --> B[React Frontend];
+        A[User] --> B[Vanilla JS Frontend];
     end
 
     subgraph "Kubernetes Cluster (EKS)"
@@ -80,7 +80,7 @@ graph TD
         J[CloudWatch Metrics] --> I;
     end
 
-    style B fill:#61DAFB,stroke:#333,stroke-width:2px
+    style B fill:#F7DF1E,stroke:#333,stroke-width:2px
     style D fill:#8CC84B,stroke:#333,stroke-width:2px
     style E fill:#4DB33D,stroke:#333,stroke-width:2px
     style F fill:#E6522C,stroke:#333,stroke-width:2px
@@ -113,9 +113,9 @@ This project is built on a modern, scalable technology stack.
 | Tech          | Description                          |
 |---------------|--------------------------------------|
 | **Backend**   | Node.js, Express.js                  |
+| **Frontend**  | HTML, CSS, JavaScript                |
 | **Database**  | MongoDB                              |
 | **AI**        | Google Gemini                        |
-| **Frontend**  | (Not specified, assumed to be part of the stack) |
 | **Container** | Docker                               |
 | **Orchestration**| Kubernetes (Amazon EKS)             |
 | **Monitoring**| Prometheus, Grafana                  |
@@ -148,8 +148,12 @@ Ensure you have the following tools installed and configured:
     cd Cloud-cost
     ```
 2.  **Configure Environment**
-    *   Copy `.env.example` to `.env`.
-    *   Fill in all the required variables like `MONGO_URI`, `GEMINI_API_KEY`, etc.
+    *   Create a file named `.env` in the root of the project.
+    *   Add the following environment variables to the `.env` file, replacing the placeholder values with your actual credentials:
+        ```
+        MONGO_URI=your_mongodb_connection_string
+        GEMINI_API_KEY=your_gemini_api_key
+        ```
 3.  **Deploy to local Kubernetes**
     ```sh
     # Create the secret
@@ -169,7 +173,8 @@ Ensure you have the following tools installed and configured:
     eksctl create cluster --name costinsight-cluster --region us-east-1 --nodes 2
     ```
 2.  **Push the Docker Image**
-    *   Build and push the image to a public registry like Docker Hub.
+    *   Log in to your preferred Docker registry (e.g., Docker Hub).
+    *   Build and push the image to the registry.
     ```sh
     docker build -t your-username/costinsight:latest .
     docker push your-username/costinsight:latest
@@ -180,9 +185,10 @@ Ensure you have the following tools installed and configured:
     kubectl apply -f kubernetes/deployment.yaml
     kubectl apply -f kubernetes/service.yaml
     ```
-    *   Find your public URL by running `kubectl get service costinsight-service`.
+    *   Find your public URL by running `kubectl get service costinsight-service`. This will be the `EXTERNAL-IP` of the service.
 4.  **Deploy Lambda Functions**
-    *   Update the `API_ENDPOINT` and `API_KEY` in `aws-cli/deploy_lambdas.sh`.
+    *   Update the `API_ENDPOINT` in `aws-cli/deploy_lambdas.sh` to the public URL of your `costinsight-service`.
+    *   Update the `API_KEY` in `aws-cli/deploy_lambdas.sh` to a secure key of your choice.
     *   Run the script:
     ```sh
     bash aws-cli/deploy_lambdas.sh
@@ -206,18 +212,20 @@ The following diagram illustrates how the application generates cost-saving advi
 sequenceDiagram
     participant User
     participant Frontend
-    participant BackendAPI as Backend API
+    participant "Backend API" as BackendAPI
+    participant "AWS" as AWS
+    participant "Google Gemini AI" as GeminiAI
     participant MongoDB
-    participant GeminiAI as Google Gemini AI
 
-    User->>Frontend: Request AI Recommendations
-    Frontend->>BackendAPI: GET /api/recommendations
-    BackendAPI->>MongoDB: Fetch latest cloud metrics
-    MongoDB-->>BackendAPI: Return metrics data
-    BackendAPI->>GeminiAI: Send prompt with metrics data
-    GeminiAI-->>BackendAPI: Return generated recommendations
-    BackendAPI->>Frontend: Send recommendations
-    Frontend-->>User: Display recommendations
+    User->>Frontend: Clicks "Analyze AWS"
+    Frontend->>BackendAPI: POST /api/dashboard
+    BackendAPI->>AWS: Fetch cloud metrics
+    AWS-->>BackendAPI: Return metrics data
+    BackendAPI->>GeminiAI: Send prompt with metrics
+    GeminiAI-->>BackendAPI: Return AI recommendations
+    BackendAPI->>MongoDB: Save analysis
+    BackendAPI-->>Frontend: Send dashboard data + recommendations
+    Frontend-->>User: Display dashboard
 ```
 
 ---
@@ -242,7 +250,7 @@ Don't forget to give the project a star! Thanks again!
 
 1.  Fork the Project
 2.  Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
-3.  Commit your Changes (`git commit -m '''Add some AmazingFeature'''`)
+3.  Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
 4.  Push to the Branch (`git push origin feature/AmazingFeature`)
 5.  Open a Pull Request
 
@@ -256,6 +264,6 @@ Distributed under the MIT License. See `LICENSE` for more information.
 
 ## 📧 Contact
 
-Project Admin - 
+Project Admin - mohdazam193
 
 Project Link: [https://github.com/mohdazam193/Cloud-cost](https://github.com/mohdazam193/Cloud-cost)

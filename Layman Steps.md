@@ -33,9 +33,13 @@ This section explains how to run the application locally. This is perfect for se
 ### Step-by-Step Guide
 
 1.  **Create the Environment File:**
-    *   Find the file named `.env.example` in the project folder.
-    *   Make a copy of it and rename the copy to `.env`.
-    *   Open the `.env` file and fill in the required keys (like your MongoDB connection string and a secret key for authentication).
+    *   In the root of the project, create a file named `.env`.
+    *   Open the `.env` file and add the following, replacing the placeholders with your actual credentials:
+        ```
+        MONGO_URI=your_mongodb_connection_string
+        GEMINI_API_KEY=your_gemini_api_key
+        API_KEY=a_secure_secret_key_of_your_choice
+        ```
 
 2.  **Build the Application's "Box" (Docker Image):**
     *   This command packages the entire application into a "Docker image," which is like a self-contained bundle.
@@ -43,9 +47,9 @@ This section explains how to run the application locally. This is perfect for se
         ```bash
         docker login
         ```
-    *   Now, build the image. The name `aazammohammad193/costinsight:latest` is important, so don't change it.
+    *   Now, build the image. Replace `your-dockerhub-username` with your actual Docker Hub username.
         ```bash
-        docker build -t aazammohammad193/costinsight:latest .
+        docker build -t your-dockerhub-username/costinsight:latest .
         ```
 
 3.  **Deploy to Your Local Kubernetes:**
@@ -107,7 +111,7 @@ Now, let's put the application on the internet so anyone can access it. We will 
         ```
     *   Push the image you built earlier to Docker Hub:
         ```bash
-        docker push aazammohammad193/costinsight:latest
+        docker push your-dockerhub-username/costinsight:latest
         ```
 
 4.  **Deploy the Application to EKS:**
@@ -151,7 +155,7 @@ This project uses two serverless functions in AWS to automate fetching cloud met
         API_KEY="REPLACE_WITH_A_STRONG_SECRET_KEY"
         ```
     *   **`API_ENDPOINT`**: Replace `"REPLACE_WITH_YOUR_BACKEND_API_ENDPOINT"` with your public website address from the previous step, followed by `/api/lambda-data`. For example: `http://a1b2c3d4e5.us-east-1.elb.amazonaws.com/api/lambda-data`
-    *   **`API_KEY`**: Replace `"REPLACE_WITH_A_STRONG_SECRET_KEY"` with a long, random password. You must also add this same key to your `.env` file as `API_KEY="your-chosen-key"`.
+    *   **`API_KEY`**: Replace `"REPLACE_WITH_A_STRONG_SECRET_KEY"` with the same `API_KEY` you set in your `.env` file.
 
 2.  **Run the Deployment Script:**
     *   This script does all the heavy lifting of setting up the functions in AWS.
