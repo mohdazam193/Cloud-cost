@@ -43,6 +43,37 @@ function getAuthToken() {
     return localStorage.getItem('authToken');
 }
 
+// AWS credential helpers - read from either legacy credential inputs or the settings form inputs
+function getAwsAccessKey() {
+    const legacy = document.getElementById('awsAccessKey')?.value?.trim();
+    if (legacy) return legacy;
+    const settingsVal = document.getElementById('aws-access-key-id')?.value?.trim();
+    return settingsVal || '';
+}
+
+function getAwsSecretKey() {
+    const legacy = document.getElementById('awsSecretKey')?.value?.trim();
+    if (legacy) return legacy;
+    const settingsVal = document.getElementById('aws-secret-access-key')?.value?.trim();
+    return settingsVal || '';
+}
+
+function setAwsAccessKey(value) {
+    if (!value) value = '';
+    const legacyEl = document.getElementById('awsAccessKey');
+    if (legacyEl) legacyEl.value = value;
+    const settingsEl = document.getElementById('aws-access-key-id');
+    if (settingsEl) settingsEl.value = value;
+}
+
+function setAwsSecretKey(value) {
+    if (!value) value = '';
+    const legacyEl = document.getElementById('awsSecretKey');
+    if (legacyEl) legacyEl.value = value;
+    const settingsEl = document.getElementById('aws-secret-access-key');
+    if (settingsEl) settingsEl.value = value;
+}
+
 // Format currency
 function formatCurrency(amount) {
     return `$${parseFloat(amount).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
@@ -589,8 +620,10 @@ async function loadSavedCredentials() {
     if (!token) return;
 
     // IMPORTANT: Always clear form fields first to prevent showing previous user's data
-    document.getElementById('awsAccessKey').value = '';
-    document.getElementById('awsSecretKey').value = '';
+    try {
+        setAwsAccessKey('');
+        setAwsSecretKey('');
+    } catch (e) { /* ignore if fields missing */ }
 
     try {
         const response = await fetch('/api/aws-credentials', {
@@ -604,7 +637,7 @@ async function loadSavedCredentials() {
             const data = await response.json();
             if (data.success && data.awsAccessKey) {
                 // Only load access key, user must re-enter secret key for security
-                document.getElementById('awsAccessKey').value = data.awsAccessKey;
+                setAwsAccessKey(data.awsAccessKey);
                 console.log('✅ Loaded saved AWS access key for this user');
             } else {
                 console.log('ℹ️ No saved credentials for this user');
@@ -630,10 +663,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Main form submission
     const dashboardForm = document.getElementById('dashboardForm');
-    dashboardForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        await analyzeAWS();
-    });
+    if (dashboardForm) {
+        dashboardForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            await analyzeAWS();
+        });
+    }
 
     // Refresh advice button (in Instance Limit Management section)
     document.getElementById('refreshAdvice')?.addEventListener('click', async () => {
@@ -679,8 +714,8 @@ document.addEventListener('DOMContentLoaded', () => {
             console.log('Logging out...');
             
             // Clear form fields immediately to prevent next user from seeing them
-            document.getElementById('awsAccessKey').value = '';
-            document.getElementById('awsSecretKey').value = '';
+            setAwsAccessKey('');
+            setAwsSecretKey('');
             
             // Clear all local storage
             localStorage.removeItem('authToken');
@@ -902,15 +937,15 @@ document.addEventListener('DOMContentLoaded', () => {
     // Store credentials and start auto-refresh after first manual analysis
     const originalAnalyzeAWS = analyzeAWS;
     window.analyzeAWS = async function() {
-        const awsAccessKey = document.getElementById('awsAccessKey').value.trim();
-        const awsSecretKey = document.getElementById('awsSecretKey').value.trim();
-        
+        const awsAccessKey = getAwsAccessKey();
+        const awsSecretKey = getAwsSecretKey();
+
         if (awsAccessKey && awsSecretKey) {
             lastAwsCredentials = { awsAccessKey, awsSecretKey };
         }
-        
+
         await originalAnalyzeAWS.apply(this, arguments);
-        
+
         if (!hasAnalyzedOnce) {
             hasAnalyzedOnce = true;
             startAutoRefresh();
@@ -924,16 +959,16 @@ document.addEventListener('DOMContentLoaded', () => {
     // Clear sensitive fields on page unload for security
     window.addEventListener('beforeunload', () => {
         const secretKeyField = document.getElementById('awsSecretKey');
-        if (secretKeyField) {
-            secretKeyField.value = '';
-        }
+            if (secretKeyField) {
+                secretKeyField.value = '';
+            }
     });
 });
 
 // Analyze AWS function
 async function analyzeAWS() {
-    const awsAccessKey = document.getElementById('awsAccessKey').value.trim();
-    const awsSecretKey = document.getElementById('awsSecretKey').value.trim();
+    const awsAccessKey = getAwsAccessKey();
+    const awsSecretKey = getAwsSecretKey();
 
     if (!awsAccessKey || !awsSecretKey) {
         showMessage('Input Required', 'Please provide both AWS Access Key and Secret Key.', true);
@@ -975,7 +1010,7 @@ async function analyzeAWS() {
     try {
         const token = getAuthToken();
         
-        const response = await fetch('/api/dashboard', {
+                const response = await fetch('/api/dashboard', {
             method: 'POST',
             headers: { 
                 'Content-Type': 'application/json',
@@ -1163,9 +1198,12 @@ async function showSettingsPage() {
         // Prefer the specific settings section to avoid duplicating headers/nav and conflicting IDs
         const main = doc.querySelector('#cloud-provider-settings') || doc.querySelector('main') || doc.body;
 
+        console.log('Loading settings fragment into dashboard settingsContainer...');
         container.innerHTML = '';
         // Append the main content
         container.appendChild(main.cloneNode(true));
+        // Ensure container is visible after injection
+        try { container.style.display = 'block'; } catch (e) { /* ignore */ }
 
         // Inject styles and scripts found in the fetched document (avoid duplicate loads)
         const baseUrl = res.url;
@@ -1214,7 +1252,16 @@ async function showSettingsPage() {
         // Wait for scripts to load, then initialize
         await Promise.all(scriptLoadPromises);
         container.dataset.loaded = 'true';
-        if (typeof initSettings === 'function') initSettings();
+        try {
+            if (typeof initSettings === 'function') {
+                console.log('Initializing settings via initSettings()');
+                initSettings();
+            } else {
+                console.warn('initSettings() not found after injecting settings page');
+            }
+        } catch (e) {
+            console.error('Error while calling initSettings():', e);
+        }
 
         window.scrollTo({ top: 0, behavior: 'smooth' });
     } catch (err) {
@@ -1547,8 +1594,8 @@ window.removeInstanceLimit = async function(instanceId) {
 async function monitorInstances() {
     if (!currentAWSData || !currentAWSData.ec2Details) return;
     
-    const awsAccessKey = document.getElementById('awsAccessKey')?.value.trim();
-    const awsSecretKey = document.getElementById('awsSecretKey')?.value.trim();
+    const awsAccessKey = getAwsAccessKey();
+    const awsSecretKey = getAwsSecretKey();
     
     if (!awsAccessKey || !awsSecretKey) return;
     
@@ -1885,8 +1932,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if (refreshLimitsBtn) {
         refreshLimitsBtn.addEventListener('click', async () => {
             // Get AWS credentials from form fields
-            const awsAccessKey = document.getElementById('awsAccessKey')?.value.trim();
-            const awsSecretKey = document.getElementById('awsSecretKey')?.value.trim();
+            const awsAccessKey = getAwsAccessKey();
+            const awsSecretKey = getAwsSecretKey();
 
             if (!awsAccessKey || !awsSecretKey) {
                 showMessage('Credentials Required', 'Please enter your AWS credentials first in the Credentials section.', true);

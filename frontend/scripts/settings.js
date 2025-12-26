@@ -52,6 +52,15 @@ function initSettings() {
 
             if (response.ok) {
                 alert('Settings saved successfully!');
+                // If dashboard legacy fields exist, update them so SPA analysis picks up new keys
+                try {
+                    if (settings.aws && settings.aws.accessKeyId) {
+                        if (typeof setAwsAccessKey === 'function') setAwsAccessKey(settings.aws.accessKeyId);
+                    }
+                    if (settings.aws && settings.aws.secretAccessKey) {
+                        if (typeof setAwsSecretKey === 'function') setAwsSecretKey(settings.aws.secretAccessKey);
+                    }
+                } catch (e) { /* ignore in standalone page */ }
             } else {
                 const error = await response.json();
                 alert(`Error saving settings: ${error.message}`);
