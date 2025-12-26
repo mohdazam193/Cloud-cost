@@ -1160,7 +1160,8 @@ async function showSettingsPage() {
         // Parse and extract the main content or the settings section
         const parser = new DOMParser();
         const doc = parser.parseFromString(text, 'text/html');
-        const main = doc.querySelector('main') || doc.querySelector('#cloud-provider-settings') || doc.body;
+        // Prefer the specific settings section to avoid duplicating headers/nav and conflicting IDs
+        const main = doc.querySelector('#cloud-provider-settings') || doc.querySelector('main') || doc.body;
 
         container.innerHTML = '';
         container.appendChild(main.cloneNode(true));

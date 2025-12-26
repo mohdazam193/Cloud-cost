@@ -45,7 +45,7 @@ function initSettings() {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem('token')}` // Assuming you store JWT in localStorage
+                        'Authorization': `Bearer ${localStorage.getItem('authToken')}` // use `authToken` key stored by login
                 },
                 body: JSON.stringify(settings),
             });
