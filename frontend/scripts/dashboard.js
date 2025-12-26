@@ -1164,9 +1164,55 @@ async function showSettingsPage() {
         const main = doc.querySelector('#cloud-provider-settings') || doc.querySelector('main') || doc.body;
 
         container.innerHTML = '';
+        // Append the main content
         container.appendChild(main.cloneNode(true));
 
-        // Mark loaded and initialize settings handlers
+        // Inject styles and scripts found in the fetched document (avoid duplicate loads)
+        const baseUrl = res.url;
+
+        // Styles
+        const linkEls = Array.from(doc.querySelectorAll('link[rel="stylesheet"]'));
+        linkEls.forEach(l => {
+            try {
+                const href = new URL(l.getAttribute('href'), baseUrl).href;
+                const already = Array.from(document.head.querySelectorAll('link[rel="stylesheet"]')).some(x => x.href === href);
+                if (!already) {
+                    const nl = document.createElement('link');
+                    nl.rel = 'stylesheet';
+                    nl.href = href;
+                    document.head.appendChild(nl);
+                }
+            } catch (e) { /* ignore malformed href */ }
+        });
+
+        // Scripts
+        const docScripts = Array.from(doc.querySelectorAll('script'));
+        const scriptLoadPromises = docScripts.map(s => {
+            if (s.src) {
+                try {
+                    const src = new URL(s.getAttribute('src'), baseUrl).href;
+                    if (document.querySelector(`script[src="${src}"]`)) return Promise.resolve();
+                    return new Promise((resolve) => {
+                        const ns = document.createElement('script');
+                        ns.src = src;
+                        ns.onload = resolve;
+                        ns.onerror = resolve;
+                        document.body.appendChild(ns);
+                    });
+                } catch (e) { return Promise.resolve(); }
+            } else {
+                // Inline script: execute immediately
+                try {
+                    const ns = document.createElement('script');
+                    ns.textContent = s.textContent;
+                    document.body.appendChild(ns);
+                } catch (e) { /* ignore */ }
+                return Promise.resolve();
+            }
+        });
+
+        // Wait for scripts to load, then initialize
+        await Promise.all(scriptLoadPromises);
         container.dataset.loaded = 'true';
         if (typeof initSettings === 'function') initSettings();
 
