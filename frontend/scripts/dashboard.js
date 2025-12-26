@@ -1106,19 +1106,74 @@ async function askGemini() {
 
 // === Navigation Handling ===
 function showCredentialsSection() {
+    // kept for backwards compatibility — show only credentials
     currentActiveSection = 'credentials';
     document.getElementById('credentialsSection').style.display = 'block';
     document.getElementById('dashboardContent').style.display = 'none';
     document.getElementById('loadingState').style.display = 'none';
     document.getElementById('aiAssistantSection').style.display = 'none';
     document.getElementById('historicalTrendsSection').style.display = 'none';
-    
+    document.getElementById('settingsPageSection')?.style.display = 'none';
+
     // Update nav active state
     document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
     document.querySelector('#credentialsNavLink').parentElement.classList.add('active');
-    
+
     // Scroll to top
     window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// Load the standalone settings page into the dashboard SPA
+async function showSettingsPage() {
+    currentActiveSection = 'settings';
+
+    // Hide other sections
+    document.getElementById('credentialsSection')?.style.display = 'none';
+    document.getElementById('dashboardContent')?.style.display = 'none';
+    document.getElementById('loadingState')?.style.display = 'none';
+    document.getElementById('aiAssistantSection')?.style.display = 'none';
+    document.getElementById('historicalTrendsSection')?.style.display = 'none';
+
+    // Update nav active state
+    document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+    document.querySelector('#credentialsNavLink')?.parentElement.classList.add('active');
+
+    const container = document.getElementById('settingsPageSection');
+    if (!container) return;
+
+    // If already loaded, just show
+    if (container.dataset.loaded === 'true') {
+        container.style.display = 'block';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        return;
+    }
+
+    try {
+        const res = await fetch('/pages/settings.html');
+        const text = await res.text();
+
+        // Parse and extract the main content or the settings section
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(text, 'text/html');
+        const main = doc.querySelector('main') || doc.querySelector('#cloud-provider-settings') || doc.body;
+
+        container.innerHTML = '';
+        container.appendChild(main.cloneNode(true));
+
+        // Show container
+        container.style.display = 'block';
+        container.dataset.loaded = 'true';
+
+        // Initialize settings handlers (settings.js exposes initSettings)
+        if (typeof initSettings === 'function') {
+            initSettings();
+        }
+
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    } catch (err) {
+        console.error('Failed to load settings page:', err);
+        showMessage('Error', 'Could not load Settings page. Try opening it directly.', true);
+    }
 }
 
 function showDashboardSection() {

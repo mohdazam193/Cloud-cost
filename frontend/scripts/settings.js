@@ -1,22 +1,24 @@
-document.addEventListener('DOMContentLoaded', () => {
+function initSettings() {
     const awsEnabledCheckbox = document.getElementById('aws-enabled');
     const azureEnabledCheckbox = document.getElementById('azure-enabled');
     const awsCredentialsDiv = document.getElementById('aws-credentials');
     const azureCredentialsDiv = document.getElementById('azure-credentials');
     const settingsForm = document.getElementById('cloud-settings-form');
 
+    if (!settingsForm) return; // Nothing to initialize
+
     // Function to toggle credential fields
     const toggleCredentials = () => {
-        awsCredentialsDiv.style.display = awsEnabledCheckbox.checked ? 'block' : 'none';
-        azureCredentialsDiv.style.display = azureEnabledCheckbox.checked ? 'block' : 'none';
+        awsCredentialsDiv.style.display = awsEnabledCheckbox && awsEnabledCheckbox.checked ? 'block' : 'none';
+        azureCredentialsDiv.style.display = azureEnabledCheckbox && azureEnabledCheckbox.checked ? 'block' : 'none';
     };
 
     // Initial check
     toggleCredentials();
 
-    // Add event listeners
-    awsEnabledCheckbox.addEventListener('change', toggleCredentials);
-    azureEnabledCheckbox.addEventListener('change', toggleCredentials);
+    // Add event listeners (guard against missing elements)
+    awsEnabledCheckbox?.addEventListener('change', toggleCredentials);
+    azureEnabledCheckbox?.addEventListener('change', toggleCredentials);
 
     // Handle form submission
     settingsForm.addEventListener('submit', async (event) => {
@@ -24,17 +26,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const settings = {
             aws: {
-                enabled: awsEnabledCheckbox.checked,
-                accessKeyId: document.getElementById('aws-access-key-id').value,
-                secretAccessKey: document.getElementById('aws-secret-access-key').value,
-                region: document.getElementById('aws-region').value,
+                enabled: awsEnabledCheckbox?.checked || false,
+                accessKeyId: document.getElementById('aws-access-key-id')?.value,
+                secretAccessKey: document.getElementById('aws-secret-access-key')?.value,
+                region: document.getElementById('aws-region')?.value,
             },
             azure: {
-                enabled: azureEnabledCheckbox.checked,
-                clientId: document.getElementById('azure-client-id').value,
-                clientSecret: document.getElementById('azure-client-secret').value,
-                tenantId: document.getElementById('azure-tenant-id').value,
-                subscriptionId: document.getElementById('azure-subscription-id').value,
+                enabled: azureEnabledCheckbox?.checked || false,
+                clientId: document.getElementById('azure-client-id')?.value,
+                clientSecret: document.getElementById('azure-client-secret')?.value,
+                tenantId: document.getElementById('azure-tenant-id')?.value,
+                subscriptionId: document.getElementById('azure-subscription-id')?.value,
             },
         };
 
@@ -59,4 +61,11 @@ document.addEventListener('DOMContentLoaded', () => {
             alert('An error occurred while saving settings.');
         }
     });
-});
+}
+
+// Auto-initialize when loaded standalone
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initSettings);
+} else {
+    initSettings();
+}

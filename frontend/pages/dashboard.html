@@ -10,6 +10,7 @@
     <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.6/dist/purify.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <script src="../scripts/auth.js"></script>
+    <script src="../scripts/settings.js" defer></script>
     <script src="../scripts/dashboard.js" defer></script>
 </head>
 <body>
@@ -24,7 +25,7 @@
                 <div id="userInfo" style="text-align: right;">
                     <div style="font-weight: 600; font-size: 0.95rem;" id="userName">Loading...</div>
                 </div>
-                <a href="/pages/settings.html" id="openSettingsPage" style="display: inline-flex; align-items: center; gap: 8px; padding: 8px 12px; background: #374151; color: white; border-radius: 8px; text-decoration: none; font-weight: 600;">
+                <a href="/pages/settings.html" id="openSettingsPage" onclick="showSettingsPage(); return false;" style="display: inline-flex; align-items: center; gap: 8px; padding: 8px 12px; background: #374151; color: white; border-radius: 8px; text-decoration: none; font-weight: 600;">
                     <i class="fa-solid fa-gear"></i> Settings Page
                 </a>
                 <button id="logoutButton" style="color: white; padding: 10px 20px; background: rgba(240, 43, 43, 0.893); border: 1px solid rgb(248, 9, 9); border-radius: 8px; cursor: pointer; transition: all 0.3s;">
@@ -55,7 +56,7 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="#credentials" id="credentialsNavLink" class="nav-link" onclick="showCredentialsSection(); return false;" style="display: flex; align-items: center; gap: 8px; color: var(--color-text-secondary); font-weight: 600; text-decoration: none; padding: 8px 12px; border-radius: 8px; transition: all 0.3s;">
+                    <a href="#credentials" id="credentialsNavLink" class="nav-link" onclick="showSettingsPage(); return false;" style="display: flex; align-items: center; gap: 8px; color: var(--color-text-secondary); font-weight: 600; text-decoration: none; padding: 8px 12px; border-radius: 8px; transition: all 0.3s;">
                         <i class="fa-solid fa-key"></i> <span>Settings</span>
                     </a>
                 </li>
@@ -97,6 +98,9 @@
                 </button>
             </form>
         </div>
+
+        <!-- Full Settings Page (loaded dynamically) -->
+        <div id="settingsPageSection" style="display: none;"></div>
 
         <!-- Loading State -->
         <div id="loadingState" style="display: none;">
