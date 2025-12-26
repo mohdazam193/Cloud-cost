@@ -36,23 +36,23 @@
         <div class="container" style="max-width: 1400px; margin: 0 auto; padding: 0 20px;">
             <ul class="nav-menu" style="display: flex; list-style: none; gap: 30px; margin: 0; padding: 15px 0;">
                 <li class="nav-item active">
-                    <a href="#dashboard" id="dashboardNavLink" class="nav-link" style="display: flex; align-items: center; gap: 8px; color: var(--color-primary); font-weight: 600; text-decoration: none; padding: 8px 12px; border-radius: 8px; transition: all 0.3s;">
+                    <a href="#dashboard" id="dashboardNavLink" class="nav-link" onclick="showDashboardSection(); return false;" style="display: flex; align-items: center; gap: 8px; color: var(--color-primary); font-weight: 600; text-decoration: none; padding: 8px 12px; border-radius: 8px; transition: all 0.3s;">
                         <i class="fa-solid fa-chart-line"></i> <span>Dashboard</span>
                     </a>
                 </li>
     
                 <li class="nav-item">
-                    <a href="#ai-assistant" id="aiAssistantNavLink" class="nav-link" style="display: flex; align-items: center; gap: 8px; color: var(--color-text-secondary); font-weight: 600; text-decoration: none; padding: 8px 12px; border-radius: 8px; transition: all 0.3s;">
+                    <a href="#ai-assistant" id="aiAssistantNavLink" class="nav-link" onclick="showAIAssistantSection(); return false;" style="display: flex; align-items: center; gap: 8px; color: var(--color-text-secondary); font-weight: 600; text-decoration: none; padding: 8px 12px; border-radius: 8px; transition: all 0.3s;">
                         <i class="fa-solid fa-robot"></i> <span>AI Assistant</span>
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="#historical-trends" id="historicalTrendsNavLink" class="nav-link" style="display: flex; align-items: center; gap: 8px; color: var(--color-text-secondary); font-weight: 600; text-decoration: none; padding: 8px 12px; border-radius: 8px; transition: all 0.3s;">
+                    <a href="#historical-trends" id="historicalTrendsNavLink" class="nav-link" onclick="showHistoricalTrendsSection(); return false;" style="display: flex; align-items: center; gap: 8px; color: var(--color-text-secondary); font-weight: 600; text-decoration: none; padding: 8px 12px; border-radius: 8px; transition: all 0.3s;">
                         <i class="fa-solid fa-clock-rotate-left"></i> <span>Historical Trends</span>
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="#credentials" id="credentialsNavLink" class="nav-link" style="display: flex; align-items: center; gap: 8px; color: var(--color-text-secondary); font-weight: 600; text-decoration: none; padding: 8px 12px; border-radius: 8px; transition: all 0.3s;">
+                    <a href="#credentials" id="credentialsNavLink" class="nav-link" onclick="showCredentialsSection(); return false;" style="display: flex; align-items: center; gap: 8px; color: var(--color-text-secondary); font-weight: 600; text-decoration: none; padding: 8px 12px; border-radius: 8px; transition: all 0.3s;">
                         <i class="fa-solid fa-key"></i> <span>Settings</span>
                     </a>
                 </li>
