@@ -1138,8 +1138,13 @@ async function showSettingsPage() {
     document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
     document.querySelector('#credentialsNavLink')?.parentElement.classList.add('active');
 
-    const container = document.getElementById('settingsPageSection');
-    if (!container) return;
+    // We'll inject settings into the credentials section's settingsContainer
+    const container = document.getElementById('settingsContainer');
+    const credentialsSection = document.getElementById('credentialsSection');
+    if (!container || !credentialsSection) return;
+
+    // Show credentials section (which now hosts settings)
+    credentialsSection.style.display = 'block';
 
     // If already loaded, just show
     if (container.dataset.loaded === 'true') {
@@ -1160,14 +1165,9 @@ async function showSettingsPage() {
         container.innerHTML = '';
         container.appendChild(main.cloneNode(true));
 
-        // Show container
-        container.style.display = 'block';
+        // Mark loaded and initialize settings handlers
         container.dataset.loaded = 'true';
-
-        // Initialize settings handlers (settings.js exposes initSettings)
-        if (typeof initSettings === 'function') {
-            initSettings();
-        }
+        if (typeof initSettings === 'function') initSettings();
 
         window.scrollTo({ top: 0, behavior: 'smooth' });
     } catch (err) {

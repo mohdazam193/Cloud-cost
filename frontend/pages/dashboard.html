@@ -70,37 +70,19 @@
         <div class="section-card credentials-section" id="credentialsSection" style="display: none;">
             <div class="section-header">
                 <div>
-                    <h2><i class="fa-solid fa-key"></i> AWS Credentials Management</h2>
-                    <p>Update your AWS credentials to analyze infrastructure in real-time</p>
+                    <h2><i class="fa-solid fa-key"></i> Settings</h2>
+                    <p>Update application settings and cloud provider credentials</p>
                 </div>
                 <button id="backToDashboard" class="refresh-btn" style="padding: 10px 20px;">
                     <i class="fa-solid fa-arrow-left"></i> Back to Dashboard
                 </button>
             </div>
-            <form id="dashboardForm">
-                <div class="credentials-grid">
-                    <div class="form-group">
-                        <label for="awsAccessKey">AWS Access Key ID <span class="required">*</span></label>
-                        <input type="text" id="awsAccessKey" placeholder="AKIAIOSFODNN7EXAMPLE" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="awsSecretKey">AWS Secret Access Key <span class="required">*</span></label>
-                        <input type="password" id="awsSecretKey" placeholder="wJalrXUtnFEMI/..." required>
-                    </div>
-                </div>
-                
-                <div class="info-banner">
-                    <strong>ℹ️ Required AWS Permissions:</strong> EC2:Describe*, CloudWatch:GetMetricStatistics, CostExplorer:GetCostAndUsage, RDS:Describe*, Lambda:List*
-                </div>
-                
-                <button type="submit" class="analyze-button">
-                    <span id="analyzeButtonText"><i class="fa-solid fa-magnifying-glass-chart"></i> Analyze AWS Infrastructure</span>
-                </button>
-            </form>
+
+            <!-- Injected settings content will appear here -->
+            <div id="settingsContainer"></div>
         </div>
 
-        <!-- Full Settings Page (loaded dynamically) -->
-        <div id="settingsPageSection" style="display: none;"></div>
+        <!-- Full Settings Page container removed; injected into credentialsSection -->
 
         <!-- Loading State -->
         <div id="loadingState" style="display: none;">
